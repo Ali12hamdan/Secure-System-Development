@@ -41,7 +41,7 @@ bandit -r vulpy/ > bandit_scan.log
 ```
 
 **Explanation:**  
-The code is catching an exception but does nothing (pass). This suppresses errors, making debugging harder and potentially allowing silent failures in security-related functions.
+The code is catching an exception but does nothing (pass). This suppresses errors, making debugging harder and potentially allowing silent failures in security-related functions.  
 **CWE-703** Improper Handling of Exceptional Conditions  
 **Solution:** Instead of pass, log the error and handle it properly:
 ```python
@@ -70,8 +70,8 @@ The code is catching an exception but does nothing (pass). This suppresses error
 ```
 
 **Explanation:**  
-Storing sensitive files in /tmp/ is insecure because it is a world-writable directory, allowing unauthorized users to read, modify, or delete the file. Attackers can exploit this to access sensitive data or perform symlink attacks. 
-**CWE-377** covers how improper handling of temporary files can lead to security risks. 
+Storing sensitive files in /tmp/ is insecure because it is a world-writable directory, allowing unauthorized users to read, modify, or delete the file. Attackers can exploit this to access sensitive data or perform symlink attacks.  
+**CWE-377** covers how improper handling of temporary files can lead to security risks.  
 **Solution:** Use Python’s tempfile module to create secure temporary files or store sensitive data in a restricted directory with proper permissions.
 
 ---
@@ -91,8 +91,8 @@ Storing sensitive files in /tmp/ is insecure because it is a world-writable dire
 ```
 
 **Explanation:**  
-Running a Flask app with debug=True enables the Werkzeug debugger, which allows arbitrary code execution if an attacker gains access. This can lead to remote code execution and compromise the entire system. 
-**CWE-94** covers how improper code execution can result in severe security risks.  
+Running a Flask app with debug=True enables the Werkzeug debugger, which allows arbitrary code execution if an attacker gains access. This can lead to remote code execution and compromise the entire system.  
+**CWE-94** covers how improper code execution can result in severe security risks.   
 **Solution:** Don't use debug=True in production. Instead, set debug=False and use proper logging mechanisms for debugging.
 
 ---
@@ -115,8 +115,8 @@ Damn_Vulnerable_C_Program/libAFL/damn_vulnerable_c_program_shmem/imgRead.c:35:  
 ```
 
 **Explanation:**  
-The strlen function does not check if a string is **null-terminated**. If it encounters a non-null-terminated string, it may over-read memory, potentially causing crashes or exposing sensitive data. 
-**CWE-126** refers to buffer over-read vulnerabilities, where a function reads beyond the allocated memory.  
+The strlen function does not check if a string is **null-terminated**. If it encounters a non-null-terminated string, it may over-read memory, potentially causing crashes or exposing sensitive data.  
+**CWE-126** refers to buffer over-read vulnerabilities, where a function reads beyond the allocated memory.   
 **Solution:** Always ensure strings are properly null-terminated before using strlen, and use safer functions like strnlen to limit the read length.
 
 ---
@@ -132,8 +132,8 @@ Damn_Vulnerable_C_Program/dvcp.c:16:  [2] (buffer) char:
 ```
 
 **Explanation:**  
-Statically-sized character arrays can lead to buffer overflows if input data exceeds the allocated size. Without proper bounds checking, this can cause memory corruption, crashes, or even arbitrary code execution. 
-**CWE-119** covers improper memory restrictions, and CWE-120 specifically addresses buffer overflows. 
+Statically-sized character arrays can lead to buffer overflows if input data exceeds the allocated size. Without proper bounds checking, this can cause memory corruption, crashes, or even arbitrary code execution.  
+**CWE-119** covers improper memory restrictions, and CWE-120 specifically addresses buffer overflows.  
 **Solution:**  Always validate input length before storing it in a fixed-size buffer, use strncpy or snprintf instead of unsafe functions like strcpy, and consider dynamically allocating memory when needed.
 
 ---
@@ -169,8 +169,8 @@ njsscan dvna/
 ![alt text](screens/3-1.jpg)
 
 **Explanation:**  
-Not setting a maxAge for session cookies means sessions may persist indefinitely, allowing attackers more time to hijack active sessions.  
-**CWE-613** relates to insufficient session expiration, where sessions do not terminate as expected, increasing the risk of unauthorized access.  
+Not setting a maxAge for session cookies means sessions may persist indefinitely, allowing attackers more time to hijack active sessions.   
+**CWE-613** relates to insufficient session expiration, where sessions do not terminate as expected, increasing the risk of unauthorized access.   
 **Solution:** Configure the session cookie with an appropriate maxAge to ensure sessions expire after a defined period, thereby limiting the window for potential attacks.
 
 ---
@@ -180,8 +180,8 @@ Not setting a maxAge for session cookies means sessions may persist indefinitely
 ![alt text](screens/3-2.jpg)
 
 **Explanation:**  
-Untrusted user input passed into the Express res.render() function may allow an attacker to manipulate file paths, potentially leading to arbitrary file reads via relative path traversal. This can expose sensitive data or configuration files.
-**CWE-23**  addresses relative path traversal vulnerabilities, which occur when user-supplied input is used to construct file paths without proper validation.
+Untrusted user input passed into the Express res.render() function may allow an attacker to manipulate file paths, potentially leading to arbitrary file reads via relative path traversal. This can expose sensitive data or configuration files.  
+**CWE-23**  addresses relative path traversal vulnerabilities, which occur when user-supplied input is used to construct file paths without proper validation.  
 **Solution:** Sanitize and validate all user inputs used in file path constructions, and implement strict whitelisting for acceptable file paths to prevent traversal attacks.
 
 ---
@@ -192,7 +192,7 @@ Untrusted user input passed into the Express res.render() function may allow an 
 
 **Explanation:**  
 The code unserializes user-supplied data from req.files.products.data.toString('utf8') without proper validation, which can allow an attacker to inject malicious objects and potentially execute arbitrary code.  
-**CWE-502** pertains to the deserialization of untrusted data, which can lead to object injection or remote code execution if the data is not properly validated and sanitized.
+**CWE-502** pertains to the deserialization of untrusted data, which can lead to object injection or remote code execution if the data is not properly validated and sanitized.  
 **Solution:** Validate and sanitize the input data before deserialization or use secure deserialization methods that enforce strict type checks to prevent injection of malicious objects.
 
 ## Task 2 - Web Security Mini Labs
