@@ -17,28 +17,11 @@
   valgrind --version
   ```
 
-![GCC and Valgrind Installation](screenshots/image.png)
+![GCC and Valgrind Installation](sh/v1.png)
+
 
 ### 2. Create `program1.c`
 
-The content of `program1.c` is as follows:
-
-```c
-#include<stdio.h>
-#include<stdlib.h>
-
-void program1(int N) {
-    int *arr = malloc(N);
-    for(int i = 0; i < N; i++) {
-        arr[i] = i * i;
-        printf("arr[%d] = %d\n", i, arr[i]);
-    }
-}
-
-int main() {
-    program1(4); // Should print the array [0, 1, 4, 9]
-}
-```
 
 ### 3. Compile `program1.c`
 
@@ -57,7 +40,7 @@ gcc -Wall -Werror -g -std=c99 -o program1 -O0 program1.c
 - `-o program1`: Specifies the output file name.
 - `-O0`: Disables optimizations.
 
-![Compilation of program1.c](screenshots/image-1.png)
+![Compilation of program1.c](sh/2.png)
 
 ### 4. Run the Program
 
@@ -67,7 +50,7 @@ The program was executed using:
 ./program1
 ```
 
-![Running program1](screenshots/image-2.png)
+![Running program1](sh/3.png)
 
 ### 5. Run the Program with Valgrind
 
@@ -77,14 +60,14 @@ The program was executed with Valgrind using:
 valgrind --leak-check=yes ./program1
 ```
 
-![Valgrind Output for program1](screenshots/image-3.png)
+![Valgrind Output for program1](sh/4.png)
 
 ### 6. Analyze Valgrind Output
 
 The Valgrind output indicates two main memory-related issues:
 
 1. **Invalid Memory Access (Out-of-Bounds Write & Read)**  
-   - The program attempts to write and read past the allocated memory (`0x4a9b044 is 0 bytes after a block of size 4 alloc'd`).
+   - The program attempts to write and read past the allocated memory (`0x4a97044 is 0 bytes after a block of size 4 alloc'd`).
    - The allocated size (4 bytes) suggests an `int` array of size **1** (`malloc(4)`), but the program accesses multiple elements (`arr[1]`, `arr[2]`, `arr[3]`).
 
    **CWE-787: Out-of-Bounds Write** – [MITRE Reference](https://cwe.mitre.org/data/definitions/787.html)  
@@ -110,9 +93,9 @@ gcc -Wall -Werror -g -std=c99 -o program1 -O0 program1.c
 valgrind --leak-check=yes ./program1
 ```
 
-![Fixed Valgrind Output for program1](screenshots/image-4.png)
+![Fixed Valgrind Output for program1](sh/fix1.png)
 
-[Updated program1.c](https://github.com/Mohammed-Nour/secure-system-development/blob/main/lab3/programs/program1.c)
+[Updated program1.c](https://github.com/Ali12hamdan/secure-system-development/blob/main/lab3/programs/program1.c)
 
 ---
 
@@ -122,34 +105,6 @@ valgrind --leak-check=yes ./program1
 
 #### 1. Create `program2.c`
 
-The content of `program2.c` is as follows:
-
-```c
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
-
-void work(int* arr, unsigned N) {
-    for(int i=1; i<N; i++) {
-        arr[i] = arr[i-1] * 2;
-    }
-    free(arr);
-}
-
-void program2(unsigned N) {
-    int* arr = (int*)malloc(N * sizeof(*arr));
-    memset(arr, 0, sizeof(*arr));
-    arr[0] = 1;
-    work(arr, N);
-    for(int i=0; i<N; i++) {
-        printf("arr[%d] = %d\n", i, arr[i]);
-    }
-}
-
-int main() {
-    program2(4); // Should print the array [1, 2, 4, 8]
-}
-```
 
 #### 2. Compile with the following command `program2.c`
 
@@ -159,7 +114,7 @@ gcc -Wall -Werror -g -std=c99 -o program2 -O0 program2.c
 
 The program was compiled and run with Valgrind:
 
-![alt text](screenshots/image-5.png)
+
 
 #### 3. Run the program with the following command `program2.c`
 
@@ -169,7 +124,7 @@ The program was compiled and run with Valgrind:
 
 - we running it, it doesn't give the correct ouptut
 
-![alt text](screenshots/image-6.png)
+![alt text](sh/p2.png)
 
 #### 4.  Run the program again with valgrind `program2.c`
 
@@ -177,12 +132,12 @@ The program was compiled and run with Valgrind:
 valgrind --leak-check=yes ./program2
 ```
 
-![Valgrind Output for program2](screenshots/image-7.png)
+![Valgrind Output for program2](sh/p22.png)
 
 #### 5. Analyze Valgrind Output `program2.c`
 
 1. **Use-After-Free**  
-   - The program accesses memory (`arr[0]`, etc.) after it has been freed (`Address 0x4a9b040 is 0 bytes inside a block of size 16 free'd`).  
+   - The program accesses memory (`arr[0]`, etc.) after it has been freed (`Address 0x4a97040 is 0 bytes inside a block of size 16 free'd`).  
 
    **CWE-416: Use After Free** – [MITRE Reference](https://cwe.mitre.org/data/definitions/416.html)
 
@@ -200,13 +155,13 @@ gcc -Wall -Werror -g -std=c99 -o program2 -O0 program2.c
 valgrind --leak-check=yes ./program2
 ```
 
-![Fixed Valgrind Output for program2](screenshots/image-8.png)
+![Fixed Valgrind Output for program2](sh/fix2.png)
 
 #### 8. Different output with Valgring and without it
 
 - Without Valgrind, the OS may reuse freed memory, leading to incorrect output. Valgrind delays memory reuse, so values may still appear correct. The issue is **use-after-free**, causing undefined behavior. The fix is to free memory **after** using it.
 
-[Updated program2.c](https://github.com/Mohammed-Nour/secure-system-development/blob/main/lab3/programs/program2.c)
+[Updated program2.c](https://github.com/Ali12hamdan/secure-system-development/blob/main/lab3/programs/program2.c)
 
 ---
 
@@ -214,28 +169,6 @@ valgrind --leak-check=yes ./program2
 
 #### 1. Create `program3.c`
 
-The content of `program3.c` is as follows:
-
-```c
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
-
-void* program3(unsigned N) {
-    void *arr = malloc(N * sizeof(*arr));
-    if((N < 1) || (arr = NULL)) {
-        printf("%s\n", "Memory allocation falied!");
-        return NULL;
-    }
-    printf("%s\n", "Memory allocation success!");
-    return arr;
-}
-
-int main() {
-    int* arr = (int*)program3(4); // Should typically succeed
-    free(arr);
-}
-```
 
 #### 2. Compile with the following command `program3.c`
 
@@ -245,8 +178,6 @@ gcc -Wall -Werror -g -std=c99 -o program3 -O0 program3.c
 
 The program was compiled and run with Valgrind:
 
-![alt text](screenshots/image-9.png)
-
 #### 3. Run the program with the following command `program3.c`
 
 ```bash
@@ -255,7 +186,7 @@ The program was compiled and run with Valgrind:
 
 - we running it
 
-![alt text](screenshots/image-10.png)
+![alt text](sh/p3.png)
 
 #### 4.  Run the program again with valgrind `program3.c`
 
@@ -263,7 +194,7 @@ The program was compiled and run with Valgrind:
 valgrind --leak-check=yes ./program3
 ```
 
-![Valgrind Output for program3](screenshots/image-11.png)
+![Valgrind Output for program3](sh/p33.png)
 
 #### 5. Analyze Valgrind Output `program3.c`
 
@@ -286,9 +217,9 @@ gcc -Wall -Werror -g -std=c99 -o program3 -O0 program3.c
 valgrind --leak-check=yes ./program3
 ```
 
-![Fixed Valgrind Output for program3](screenshots/image-20.png)
+![Fixed Valgrind Output for program3](sh/fix3.png)
 
-[Updated program3.c](https://github.com/Mohammed-Nour/secure-system-development/blob/main/lab3/programs/program3.c)
+[Updated program3.c](https://github.com/Ali12hamdan/secure-system-development/blob/main/lab3/programs/program3.c)
 
 ---
 
@@ -296,27 +227,6 @@ valgrind --leak-check=yes ./program3
 
 #### 1. Create `program4.c`
 
-The content of `program4.c` is as follows:
-
-```c
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
-
-char* getString() {
-    char message[100] = "Hello World!";
-    char* ret = message;
-    return ret;
-}
-
-void program4() {
-    printf("String: %s\n", getString());
-}
-
-int main() {
-    program4();
-}
-```
 
 #### 2. Compile with the following command `program4.c`
 
@@ -326,7 +236,6 @@ gcc -Wall -Werror -g -std=c99 -o program4 -O0 program4.c
 
 The program was compiled and run with Valgrind:
 
-![alt text](screenshots/image-13.png)
 
 #### 3. Run the program with the following command `program4.c`
 
@@ -336,7 +245,7 @@ The program was compiled and run with Valgrind:
 
 - we running it
 
-![alt text](screenshots/image-14.png)
+![alt text](sh/p4.png)
 
 #### 4.  Run the program again with valgrind `program4.c`
 
@@ -344,8 +253,7 @@ The program was compiled and run with Valgrind:
 valgrind --leak-check=yes ./program4
 ```
 
-![Valgrind Output for program4](screenshots/image-15.png)
-![Valgrind Output for program4](screenshots/image-16.png)
+![Valgrind Output for program4](sh/p44.png)
 
 #### 5. Analyze Valgrind Output `program4.c`
 
@@ -375,9 +283,9 @@ gcc -Wall -Werror -g -std=c99 -o program4 -O0 program4.c
 valgrind --leak-check=yes ./program4
 ```
 
-![Fixed Valgrind Output for program4](screenshots/image-17.png)
+![Fixed Valgrind Output for program4](sh/fix4.png)
 
-[Updated program4.c](https://github.com/Mohammed-Nour/secure-system-development/blob/main/lab3/programs/program4.c)
+[Updated program4.c](https://github.com/Ali12hamdan/secure-system-development/blob/main/lab3/programs/program4.c)
 
 ---
 
@@ -385,52 +293,85 @@ valgrind --leak-check=yes ./program4
 
 ### 1. Identify and Fix CWEs
 
-#### CWE-835: Loop with Unreachable Exit Condition (Infinite Loop)
+# Vulnerable HashMap Library - Analysis & Fixes
 
-- **Issue:** The `HashIndex` function had an infinite loop due to an incorrect termination condition.
-- **Fix:** Corrected the loop to terminate at the end of the string.
+## Identified Vulnerabilities & Fixes
 
-  ```c
-  for (const char* c = key; *c != '\0'; c++) {
-      sum += *c;
-  }
-  ```
+### 1. **CWE-787: Out-of-Bounds Write (Array Indexing Issue)**
+- **Issue:** `HashIndex()` does not constrain the index within `MAP_MAX`, potentially causing out-of-bounds writes.
+- **Fix:** Use modulo operation to ensure valid indexing:
+    ```c
+    return sum % MAP_MAX;
+    ```
 
-#### CWE-457: Use of Uninitialized Variable
+---
 
-- **Issue:** `sum` in `HashIndex` was not initialized.
-- **Fix:** Initialized `sum` to 0.
+### 2. **CWE-125: Out-of-Bounds Read (Invalid String Iteration in `HashIndex`)**
+- **Issue:** The loop inside `HashIndex()` uses:
+    ```c
+    for (char* c = key; c; c++) { ... }
+    ```
+  - This mistakenly treats `c` as an address instead of iterating over characters.
+- **Fix:** Properly iterate over the string:
+    ```c
+    int sum = 0;
+    for (const char* c = key; *c != '\0'; c++) {
+        sum += *c;
+    }
+    return sum % MAP_MAX;
+    ```
 
-  ```c
-  int sum = 0;
-  ```
+---
 
-#### CWE-125: Out-of-bounds Read
+### 3. **CWE-416: Use-After-Free (`HashDelete` Incorrectly Manipulates List)**
+- **Issue:** `HashDelete()` does not `free()` the removed `PairValue`, leading to a memory leak.
+- **Fix:** Proper memory deallocation:
+    ```c
+    free(val);
+    ```
 
-- **Issue:** The hash index could exceed the array bounds.
-- **Fix:** Applied modulo `MAP_MAX` to ensure valid indices.
+---
 
-  ```c
-  return sum % MAP_MAX;
-  ```
+### 4. **CWE-401: Memory Leak (HashMap Initialization)**
+- **Issue:** `HashInit()` does not initialize the array, leading to potential invalid memory accesses.
+- **Fix:** Initialize `data` to `NULL`:
+    ```c
+    HashMap* map = malloc(sizeof(HashMap));
+    if (map == NULL) {
+        perror("Memory allocation failed");
+        exit(EXIT_FAILURE);
+    }
+    memset(map->data, 0, sizeof(map->data));
+    ```
 
-#### CWE-480: Use of Incorrect Operator
+---
 
-- **Issue:** `strcmp` check in `HashFind` and `HashDelete` was inverted.
-- **Fix:** Corrected the condition to check for equality.
+### 5. **CWE-119: Improper Memory Handling in `HashAdd`**
+- **Issue:** Overwrites existing values without properly handling memory.
+- **Fix:** Allocate memory dynamically for new pairs.
 
-  ```c
-  if (strcmp(val->KeyName, key) == 0)
-  ```
+---
+
+### 6. **CWE-134: Uncontrolled Format String (Unsafe `printf`)**
+- **Issue:** The following code in `HashDump()` can lead to format string attacks:
+    ```c
+    printf(val->KeyName);
+    ```
+- **Fix:** Use a safe format string:
+    ```c
+    printf("%s\n", val->KeyName);
+    ```
+
+---
+
 
 ### 2. Implement Improvements
 
 - Refer to [Secure Coding Guidelines](https://securecoding.cert.org/) for best practices.
-- Updated code can be found in the repository: [Updated hash.c](https://github.com/Mohammed-Nour/secure-system-development/blob/main/lab3/programs/hash.c)
+- Updated code can be found in the repository: [Updated hash.c](https://github.com/Ali12hamdan/secure-system-development/blob/main/lab3/programs/hash.c)
 
 ### 3. Verify Fixes
 
 The code was compiled and run with Valgrind to ensure no memory-related issues were present.
 
-![Flawfinder Output](screenshots/image-18.png)
-![Valgrind Output for HashMap](screenshots/image-19.png)
+![Valgrind Output for HashMap](sh/finalfix.png)
